@@ -1,16 +1,11 @@
-/* Login.css */
-* {
-    font-family: 'Montserrat', sans-serif;
-}
-
-.login-container {
+.container {
     position: relative;
 
     height: 100vh;
     max-width: 1240px;
     min-height: 100vh;
     margin: 0 auto;
-    background-color: rgb(245, 171, 11);
+    background-color: #F8F1E7;
 }
 
 .nav {
@@ -33,7 +28,7 @@
     left: 10px;
     width: 90px;
     height: 80px;
-    /* background-color: aqua; */
+
     background-image: url('./media/logo.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -63,8 +58,11 @@
     align-items: center;
 }
 
-.navbar .links .link:nth-child(1) {
-    background-color: #ff9933 !important;
+.nav .navbar .links .link:nth-child(1) {
+    left: 200px;
+    background-color: #F8F1E7;
+    padding-right: 0%;
+    margin-right: 50px;
 }
 
 .nav .navbar .links .link:nth-child(3) {
@@ -77,6 +75,19 @@
     padding-right: 50px;
 }
 
+.nav .navbar .links a:nth-child(1) {
+    width: 200px;
+    height: auto;
+
+    padding-right: 0%;
+    margin-right: 15px;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.nav .navbar .links .active-link {
+    color: white;
+}
 
 .nav .navbar span.logout {
     position: absolute;
@@ -87,63 +98,4 @@
 .nav .navbar a {
     display: inline-block;
     cursor: pointer;
-}
-
-.below-nav {
-    position: absolute;
-    top: 80px;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-
-    height: 100%;
-    width: 100%;
-    background-color: #F8F1E7;
-}
-
-.below-nav .image {
-    width: 60%;
-    height: 100%;
-    background-image: url('./media/deliveryman.jpeg');
-    background-size: cover;
-}
-
-.below-nav .login-form {
-    width: 40%;
-
-    text-align: center;
-    padding: 15px 20px 20px 15px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    margin: auto 15px;
-
-    background: rgba(255, 153, 51, 0.2);
-    /* background-color: #ffb366;
-    255, 153, 51, 0.2
-    255, 179, 102, 0.2
-    background-opacity: 0.2; */
-}
-
-.login-form h3 {
-    white-space: nowrap;
-}
-
-.login-form h3 span {
-    display: block;
-}
-
-.login-form input,
-.login-form button {
-    display: block;
-    margin: 0 auto;
-    width: 70%;
-    margin-bottom: 30px;
-}
-
-.login-form button {
-    width: auto;
-    padding-left: 10px;
-    padding-right: 10px;
 }

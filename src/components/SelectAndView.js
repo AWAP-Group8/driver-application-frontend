@@ -1,21 +1,46 @@
 // SelectAndView.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import './SelectAndView.css';
 
 const SelectAndView = () => {
     const [selectedLocker, setSelectedLocker] = useState(null);
-    const [availableCabinets, setAvailableCabinets] = useState([]);
+    const [cabinetStatuses, setCabinetStatuses] = useState([]);
     const [error, setError] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(true); // Initialize with an appropriate value
+    const navigate = useNavigate();// Initialize the useNavigate hook
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+    };
+
+    // Function to navigate to 'Pick Up Parcels' page with the selected locker
+    const handleNavigateToPickUpParcels = () => {
+        // Ensure a locker is selected before navigating
+        if (selectedLocker) {
+            // Use the navigate function to navigate to the 'pick-up-parcels' page with the selected locker as a parameter
+            navigate(`/pick-up-parcels/${selectedLocker.locker}`);
+        } else {
+            // Handle case where no locker is selected
+            console.warn('Please select a locker before proceeding.');
+        }
+    };
+
 
     // Function to handle locker selection
     const handleSelectLocker = async (locker) => {
         try {
-            const response = await axios.get('/select-active-parcel-locker', {
+            const response = await axios.get('/availableCabinets', {
                 params: { locker: locker }
             });
 
             if (response.data.success) {
-                setSelectedLocker(response.data.data);
+                setSelectedLocker({
+                    locker: locker,
+                    cabinet_status: 'free',
+                });
+                setCabinetStatuses(response.data.data.cabinets);
                 setError('');
             } else {
                 setSelectedLocker(null);
@@ -27,62 +52,81 @@ const SelectAndView = () => {
         }
     };
 
-    // Function to get available cabinets
-    const fetchAvailableCabinets = async (locker) => {
+    // Function to fetch cabinet statuses
+    const fetchCabinetStatuses = async (locker) => {
         try {
-            const response = await axios.get(`/available-cabinets/${locker}`);
-            setAvailableCabinets(response.data.cabinets);
+            const response = await axios.get(`/cabinet-statuses/${locker}`);
+            setCabinetStatuses(response.data.statuses);
         } catch (error) {
-            console.error('Error fetching available cabinets:', error);
+            console.error('Error fetching cabinet statuses:', error);
+            setError('Error fetching cabinet statuses. Please try again.');
         }
     };
 
-    // UseEffect to fetch available cabinets when selectedLocker changes
+    // UseEffect to fetch cabinet statuses when selectedLocker changes
     useEffect(() => {
         if (selectedLocker) {
-            fetchAvailableCabinets(selectedLocker.locker);
+            fetchCabinetStatuses(selectedLocker.locker);
         }
     }, [selectedLocker]);
 
     return (
-        <div>
-            <h2>Select and View</h2>
+        <div className='container'>
+            <div className="nav">
+                <nav className="navbar">
+                    <div className='links'>
+                        <div className='link'><Link to="/select-and-view">Select and View</Link></div>
+                        <div className='link'> <Link to="/pick-up-parcels">Pick Up Parcels</Link></div>
+                        <div className='link'><Link to="/deliver-parcels">Deliver Parcels</Link></div>
+                    </div>
 
-            {/* Display locker selection options */}
-            <div>
-                <p>Please select a locker:</p>
-                <button onClick={() => handleSelectLocker('A')}>Locker A</button>
-                <button onClick={() => handleSelectLocker('B')}>Locker B</button>
-                <button onClick={() => handleSelectLocker('C')}>Locker C</button>
-                <button onClick={() => handleSelectLocker('D')}>Locker D</button>
-                <button onClick={() => handleSelectLocker('E')}>Locker E</button>
+                    <span className='logo'></span>
+                    <span className='logout' onClick={handleLogout}>log out</span>
+                </nav>
             </div>
 
-            {/* Display selected locker information */}
-            {selectedLocker && (
-                <div>
-                    <p>Selected Locker: {selectedLocker.locker}</p>
-                    <p>Cabinet Status: {selectedLocker.cabinet_status}</p>
+            <div className='content'>
+                {/* Display locker selection options */}
+                <div className='lockers'>
+                    <p>Please select a locker:</p>
+                    <button onClick={() => handleSelectLocker('A')}>Locker A</button>
+                    <button onClick={() => handleSelectLocker('B')}>Locker B</button>
+                    <button onClick={() => handleSelectLocker('C')}>Locker C</button>
+                    <button onClick={() => handleSelectLocker('D')}>Locker D</button>
+                    <button onClick={() => handleSelectLocker('E')}>Locker E</button>
                 </div>
-            )}
 
-            {/* Display available cabinets */}
-            {availableCabinets.length > 0 && (
-                <div>
-                    <p>Available Cabinets:</p>
-                    <ul>
-                        {availableCabinets.map((cabinet) => (
-                            <li key={cabinet}>{cabinet}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+                {/* Display selected locker information */}
+                {selectedLocker && (
+                    <div>
+                        <p>Selected Locker: {selectedLocker.locker}</p>
+                        <p>Cabinet Status: {selectedLocker.cabinet_status}</p>
+                    </div>
+                )}
 
-            {/* Display error message */}
-            {error && <div className="error-message">{error}</div>}
+                {/* Display available cabinets */}
+                {cabinetStatuses.length > 0 && (
+                    <div>
+                        <p>Available Cabinets:</p>
+                        <div className="cabinet-cards">
+                            {cabinetStatuses.map((status, index) => (
+                                status === 'free' && (
+                                    <div key={index} className="cabinet-card">
+                                        <p>{`Locker ${selectedLocker.locker} Cabinet ${index + 1}`}</p>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Display error message */}
+                {error && <div className="error-message">{error}</div>}
+            </div>
         </div>
     );
 };
 
 export default SelectAndView;
+
 

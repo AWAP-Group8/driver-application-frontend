@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, NavLink } from 'react-router-dom';
 import './Login.css';
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'https://gogoship.azurewebsites.net';
 
 const Login = () => {
     // State variables to hold email, password, and error message
@@ -21,18 +21,18 @@ const Login = () => {
             setIsLoading(true);
             // Make a request to the backend to authenticate the user
             console.log('Before axios request');
-            const response = await axios.post('/login', {
-                driver_email: email,
-                password: password
+            const response = await axios.get('/driver/login', {
+                params: {
+                    driver_email: email,
+                    password: password,
+                },
             });
             console.log('After axios request', response);
 
             // Check the response from the backend
             if (response.data.success) {
-                // If login is successful, set the login status to true
                 setIsLoggedIn(true);
-                navigate('/select-and-view');
-                // Handle other login success actions here
+                navigate('/select-and-view');  // Navigate to the desired route
                 console.log('Login successful');
                 console.log('Token:', response.data.data.token);
                 console.log('User info:', response.data.data.info);
@@ -41,9 +41,12 @@ const Login = () => {
                 setError(response.data.msg);
             }
         } catch (error) {
-            // Handle any unexpected errors
-            console.error('Error during login:', error);
-            setError('Internal server error');
+            if (error.response && error.response.status !== 200) {
+                setError('Invalid credentials');  // Handle non-200 status code
+            } else {
+                console.error('Error during login:', error);
+                setError('Internal server error');
+            }
         }
     };
 
@@ -58,23 +61,18 @@ const Login = () => {
                 <nav className="navbar">
                     {isLoggedIn ? (
                         // If logged in, show navigation links
-                        <>
-                            <span>
-                                <Link to="/select-and-view">Select and View</Link>
-                            </span>
-                            <span>
-                                <Link to="/pick-up-parcels">Pick Up Parcels</Link>
-                            </span>
-                            <span>
-                                <Link to="/deliver-parcels">Deliver Parcels</Link>
-                            </span>
-                        </>
+                        <div className='links'>
+                            <div className='link'><Link to="/select-and-view">Select and View</Link></div>
+                            <div className='link'> <Link to="/pick-up-parcels">Pick Up Parcels</Link></div>
+                            <div className='link'><Link to="/deliver-parcels">Deliver Parcels</Link></div>
+                        </div>
                     ) : (
                         // If not logged in, show nothing
                         <></>
                     )}
-                    <span></span>
-                    <span onClick={handleLogout}>log out</span>
+
+                    <span className='logo'></span>
+                    <span className='logout' onClick={handleLogout}>log out</span>
                 </nav>
             </div>
 
