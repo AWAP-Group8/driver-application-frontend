@@ -20,6 +20,7 @@ const SelectAndView = () => {
         // Ensure a locker is selected before navigating
         if (selectedLocker) {
             // Use the navigate function to navigate to the 'pick-up-parcels' page with the selected locker as a parameter
+            console.log('Navigating to pick-up-parcels with locker:', selectedLocker.locker);
             navigate(`/pick-up-parcels/${selectedLocker.locker}`);
         } else {
             // Handle case where no locker is selected
@@ -27,30 +28,53 @@ const SelectAndView = () => {
         }
     };
 
+    // Function to handle cabinet availability response
+    const handleCabinetAvailability = (response) => {
+        console.log('Handling Cabinet Availability:', response.data);
+        if (response.data.success) {
+            const cabinets = response.data.data.cabinets;
+
+            // Case: No available cabinets
+            if (cabinets.length === 0) {
+                setError('This locker is busy');
+                setSelectedLocker(null);
+            } else {
+                // Case: Display available cabinets
+                setSelectedLocker({
+                    locker: selectedLocker.locker,
+                    cabinet_status: 'free',
+                });
+                setCabinetStatuses(cabinets);
+                setError('');
+            }
+        } else {
+            // Handle the case where the backend request is not successful
+            setError(response.data.msg);
+            setSelectedLocker(null);
+        }
+    };
 
     // Function to handle locker selection
     const handleSelectLocker = async (locker) => {
+        console.log('Selected Locker:', locker);
         try {
+            console.log('before axios')
             const response = await axios.get('/availableCabinets', {
-                params: { locker: locker }
+                params: { locker: locker },
+                headers: {
+                    token: localStorage.getItem('token') || '',
+                },
             });
+            console.log('Response from /availableCabinets:', response);
 
-            if (response.data.success) {
-                setSelectedLocker({
-                    locker: locker,
-                    cabinet_status: 'free',
-                });
-                setCabinetStatuses(response.data.data.cabinets);
-                setError('');
-            } else {
-                setSelectedLocker(null);
-                setError(response.data.msg);
-            }
+            // Handle cabinet availability response
+            handleCabinetAvailability(response);
         } catch (error) {
             console.error('Error during locker selection:', error);
             setError('Internal server error');
         }
     };
+
 
     // Function to fetch cabinet statuses
     const fetchCabinetStatuses = async (locker) => {
@@ -89,7 +113,7 @@ const SelectAndView = () => {
                 {/* Display locker selection options */}
                 <div className='lockers'>
                     <p>Please select a locker:</p>
-                    <button onClick={() => handleSelectLocker('A')}>Locker A</button>
+                    <button onClick={() => { console.log('Button A clicked'); handleSelectLocker('A'); }}>Locker A</button>
                     <button onClick={() => handleSelectLocker('B')}>Locker B</button>
                     <button onClick={() => handleSelectLocker('C')}>Locker C</button>
                     <button onClick={() => handleSelectLocker('D')}>Locker D</button>
@@ -112,7 +136,7 @@ const SelectAndView = () => {
                             {cabinetStatuses.map((status, index) => (
                                 status === 'free' && (
                                     <div key={index} className="cabinet-card">
-                                        <p>{`Locker ${selectedLocker.locker} Cabinet ${index + 1}`}</p>
+                                        <p>{`Locker ${selectedLocker?.locker} Cabinet ${index + 1}`}</p>
                                     </div>
                                 )
                             ))}
