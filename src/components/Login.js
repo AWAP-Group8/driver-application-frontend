@@ -36,6 +36,8 @@ const Login = () => {
                 console.log('Login successful');
                 console.log('Token:', response.data.data.token);
                 console.log('User info:', response.data.data.info);
+                const token = response.data.data.token;
+                localStorage.setItem('token', token)
             } else {
                 // If login fails, set the error message
                 setError(response.data.msg);
@@ -72,7 +74,7 @@ const Login = () => {
                     )}
 
                     <span className='logo'></span>
-                    <span className='logout' onClick={handleLogout}>log out</span>
+                    <button className='logout' onClick={handleLogout}>log out</button>
                 </nav>
             </div>
 

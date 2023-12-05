@@ -78,7 +78,7 @@
 }
 
 
-.nav .navbar span.logout {
+.nav .navbar button.logout {
     position: absolute;
     top: 22px;
     right: 20px;

@@ -12,7 +12,10 @@ const SelectAndView = () => {
     const navigate = useNavigate();// Initialize the useNavigate hook
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
         setIsLoggedIn(false);
+
     };
 
     // Function to navigate to 'Pick Up Parcels' page with the selected locker
@@ -57,12 +60,14 @@ const SelectAndView = () => {
     // Function to handle locker selection
     const handleSelectLocker = async (locker) => {
         console.log('Selected Locker:', locker);
+        console.log(localStorage.getItem('token'));
         try {
             console.log('before axios')
-            const response = await axios.get('/availableCabinets', {
+            const response = await axios.get('/driver/availableCabinets', {
+
                 params: { locker: locker },
                 headers: {
-                    token: localStorage.getItem('token') || '',
+                    token: localStorage.getItem('token'),
                 },
             });
             console.log('Response from /availableCabinets:', response);
@@ -105,7 +110,7 @@ const SelectAndView = () => {
                     </div>
 
                     <span className='logo'></span>
-                    <span className='logout' onClick={handleLogout}>log out</span>
+                    <button className='logout' onClick={handleLogout}>log out</button>
                 </nav>
             </div>
 

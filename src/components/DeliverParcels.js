@@ -70,7 +70,7 @@ const DeliverParcels = () => {
                     </div>
 
                     <span className='logo'></span>
-                    <span className='logout' onClick={handleLogout}>log out</span>
+                    <button className='logout' onClick={handleLogout}>log out</button>
                 </nav>
             </div>
 
