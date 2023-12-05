@@ -1,59 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './PickUpParcels.css';
 
 const PickUpParcels = () => {
-    const [parcels, setParcels] = useState([]);
-    const [locker, setLocker] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Initialize with an appropriate value
-    const { locker: lockerParam } = useParams(); // Use the useParams hook to get the locker value from the URL
+    const navigate = useNavigate();
+        const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+        };
 
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-    };
-
-    useEffect(() => {
-        // Fetch the list of waiting parcels when the component mounts
-        const fetchParcels = async () => {
+   
+        const fetchParcels = async (locker) => {
             try {
-                const response = await axios.get(`/canDeliverCabinets?locker=${lockerParam}`);
-                if (response.data.success) {
-                    setParcels(response.data.data.cabinets);
-                } else {
-                    console.error('Error fetching parcels:', response.data.msg);
-                }
+                const response = await axios.get(`/driver/canDeliverCabinets`,{
+                    params: { locker: locker },
+                    headers: {
+                        token: localStorage.getItem('token'),
+                    },
+                });
+    
+                const parcels = response.data.data.result;
+                const waitingParcels = parcels.filter((parcel) => parcel.parcel_status === 'waiting for dropping off' && parcel.sender_locker === locker);
+                console.log(waitingParcels);
             } catch (error) {
-                console.error('Error during fetch:', error);
+                console.error('Error during locker selection:', error);
             }
         };
 
-        fetchParcels();
-        setLocker(lockerParam); // Set the locker state with the value from the URL params
-    }, [lockerParam]); //Use lockerParam as a dependency to re-fetch when the locker value changes
-
-    const handleCardClick = async (senderCabinet) => {
-        try {
-            // Fetch the selected parcel details
-            const response = await axios.post('/pickupParcel', {
-                selectedLocker: lockerParam, // Replace with the actual locker value
-                selectedCabinet: senderCabinet,
-                code: senderCode // Replace with the actual code value
-            });
-
-            if (response.data.success) {
-                // Implement logic to handle successful pickup
-                console.log(`Parcel picked up successfully from cabinet ${senderCabinet}`);
-            } else {
-                console.error('Error picking up parcel:', response.data.msg);
-            }
-        } catch (error) {
-            console.error('Error during pickup:', error);
-        }
-    };
-
+    
+    
     // Filter parcels with status 'waiting for sending'
-    const waitingParcels = parcels.filter((parcel) => parcel.parcel_status === 'waiting for sending');
+    //const waitingParcels = parcels.filter((parcel) => parcel.parcel_status === 'waiting for sending');
 
     return (
         <div className='container'>
@@ -66,29 +44,24 @@ const PickUpParcels = () => {
                     </div>
 
                     <span className='logo'></span>
+                    {localStorage.getItem('token') && (
                     <button className='logout' onClick={handleLogout}>log out</button>
+                    )}
                 </nav>
             </div>
-
             <div className='content'>
-                <p>There are {waitingParcels.length} parcels for you to pick up. Please use the codes provided to open a cabinet.</p>
-                <p>Click the card once you picked up a parcel.</p>
-                <div className="parcel-list">
-                    {waitingParcels.map((parcel) => (
-                        <div
-                            key={parcel.sender_cabinet}
-                            className="parcel-card"
-                            onClick={() => handleCardClick(parcel.sender_cabinet, parcel.sender_code)}
-                        >
-                            <p>Cabinet: {parcel.sender_cabinet}</p>
-                            <p>Code: {parcel.sender_code}</p>
-                        </div>
-                    ))}
+                <div className='lockers'>
+                    <p>Please select a locker:</p>
+                    <button onClick={() => fetchParcels('A')}>Locker A</button>
+                    <button onClick={() => fetchParcels('B')}>Locker B</button>
+                    <button onClick={() => fetchParcels('C')}>Locker C</button>
+                    <button onClick={() => fetchParcels('D')}>Locker D</button>
+                    <button onClick={() => fetchParcels('E')}>Locker E</button>
                 </div>
-            </div>
+                </div>
 
         </div>
-    );
-};
+    )
+}
 
 export default PickUpParcels;
