@@ -52,11 +52,6 @@ const Login = () => {
         }
     };
 
-    // Function to handle logout button click
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-    };
-
     return (
         <div className="login-container">
             <div className="nav">
@@ -74,7 +69,7 @@ const Login = () => {
                     )}
 
                     <span className='logo'></span>
-                    <button className='logout' onClick={handleLogout}>log out</button>
+
                 </nav>
             </div>
 

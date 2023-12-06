@@ -1,61 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './DeliverParcels.css';
+import { Link, useNavigate } from 'react-router-dom';
+import './PickUpParcels.css';
 
 const DeliverParcels = () => {
-    const [freeCabinets, setFreeCabinets] = useState([]);
-    const [selectedCabinet, setSelectedCabinet] = useState(null);
-    const [undeliveredParcels, setUndeliveredParcels] = useState([]);
-    const [selectedParcel, setSelectedParcel] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Initialize with an appropriate value
+    const navigate = useNavigate();
+    const [dropingParcels, setDropingParcels] = React.useState([]);
 
     const handleLogout = () => {
-        setIsLoggedIn(false);
+        localStorage.removeItem('token');
+        navigate('/');
     };
 
-    useEffect(() => {
-        // Fetch the list of free cabinets and undelivered parcels when the component mounts
-        const fetchData = async () => {
-            try {
-                const cabinetsResponse = await axios.get('/free-cabinets');
-                const parcelsResponse = await axios.get('/undelivered-parcels');
+    const fetchParcels = async (locker) => {
+        try {
+            const response = await axios.get(`/driver/canDeliverCabinets`, {
+                params: { locker: locker },
+                headers: {
+                    token: localStorage.getItem('token'),
+                },
+            });
 
-                if (cabinetsResponse.data.success) {
-                    setFreeCabinets(cabinetsResponse.data.data);
-                } else {
-                    console.error('Error fetching free cabinets:', cabinetsResponse.data.msg);
-                }
+            const parcels = response.data.data.result;
+            const dropingParcels = parcels.filter((parcel) => parcel.parcel_status === 'during transportation' && parcel.pickup_locker === locker);
+            setDropingParcels(dropingParcels);
 
-                if (parcelsResponse.data.success) {
-                    setUndeliveredParcels(parcelsResponse.data.data);
-                } else {
-                    console.error('Error fetching undelivered parcels:', parcelsResponse.data.msg);
-                }
-            } catch (error) {
-                console.error('Error during fetch:', error);
-            }
-        };
-
-        fetchData();
-    }, []); // Empty dependency array to ensure the effect runs only once
-
-    const handleSelectCabinet = (cabinet) => {
-        setSelectedCabinet(cabinet);
-    };
-
-    const handleSelectParcel = (parcel) => {
-        setSelectedParcel(parcel);
-    };
-
-    const handleDeliverParcel = () => {
-        if (selectedCabinet && selectedParcel) {
-            const message = `Deliver a parcel to Cabinet ${selectedCabinet.cabinetNumber} with Pickup Code ${selectedParcel.pickupCode}`;
-            alert(message);
-            // Optionally, you can send a request to mark the parcel as delivered
-            // and update the UI accordingly.
-        } else {
-            console.warn('Please select a cabinet and a parcel before delivering.');
+            console.log(dropingParcels);
+        } catch (error) {
+            console.error('Error during locker selection:', error);
         }
     };
 
@@ -70,41 +42,40 @@ const DeliverParcels = () => {
                     </div>
 
                     <span className='logo'></span>
-                    <button className='logout' onClick={handleLogout}>log out</button>
+                    {localStorage.getItem('token') && (
+                        <button className='logout' onClick={handleLogout}>log out</button>
+                    )}
                 </nav>
             </div>
-
             <div className='content'>
-                <p>Select a free cabinet and choose a parcel to deliver</p>
-                <div className="free-cabinets">
-                    {freeCabinets.map((cabinet) => (
-                        <div
-                            key={cabinet.id}
-                            className={`cabinet-card ${selectedCabinet && selectedCabinet.id === cabinet.id ? 'selected' : ''}`}
-                            onClick={() => handleSelectCabinet(cabinet)}
-                        >
-                            <p>Cabinet Location: {cabinet.location}</p>
-                            <p>Cabinet Number: {cabinet.cabinetNumber}</p>
-                        </div>
-                    ))}
+                <div className='lockers'>
+                    <p>Please select a locker:</p>
+                    <button onClick={() => fetchParcels('A')}>Locker A</button>
+                    <button onClick={() => fetchParcels('B')}>Locker B</button>
+                    <button onClick={() => fetchParcels('C')}>Locker C</button>
+                    <button onClick={() => fetchParcels('D')}>Locker D</button>
+                    <button onClick={() => fetchParcels('E')}>Locker E</button>
                 </div>
-                <p>View parcels during transportation and choose one to deliver</p>
-                <div className="undelivered-parcels">
-                    {undeliveredParcels.map((parcel) => (
-                        <div
-                            key={parcel.id}
-                            className={`parcel-card ${selectedParcel && selectedParcel.id === parcel.id ? 'selected' : ''}`}
-                            onClick={() => handleSelectParcel(parcel)}
-                        >
-                            <p>Tracking Number: {parcel.trackingNumber}</p>
-                        </div>
-                    ))}
-                </div>
-                <button onClick={handleDeliverParcel}>Deliver a Parcel</button>
+            </div>
+
+            <div className='parcels'>
+                {dropingParcels.length > 0 ? (
+                    <div className='parcel-list'>
+                        <p>Parcels in the locker:</p>
+                        {dropingParcels.map((parcel) => (
+                            <div key={parcel.pickup_cabinet}
+                                className="parcel-card">
+                                <p>locker: {parcel.pickup_locker}</p>
+                                <p>cabinet: {parcel.pickup_cabinet}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No parcels for you to deliver at current locker location</p>
+                )}
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default DeliverParcels;
-
