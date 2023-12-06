@@ -1,12 +1,17 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, useNavigate, useState } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './PickUpParcels.css';
 
 const PickUpParcels = () => {
     const navigate = useNavigate();
     const [error, setError] = React.useState('');
     const [waitingParcels, setWaitingParcels] = React.useState([]);
+    const [selectedLocker, setSelectedLocker] = React.useState(false);
+
+    const handleSelectLocker = () => {
+        setSelectedLocker(true);
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -37,7 +42,7 @@ const PickUpParcels = () => {
         try {
             // Make a request to the backend 
             console.log('Before axios request');
-            const response = await axios.post('/pickupParcel', {
+            const response = await axios.post('/driver/pickupParcel', {
                 params: {
                     selectedLocker,
                     selectedCabinet,

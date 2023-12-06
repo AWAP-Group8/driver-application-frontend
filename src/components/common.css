@@ -1,0 +1,101 @@
+.container {
+    position: relative;
+
+    height: 100vh;
+    max-width: 1240px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: #F8F1E7;
+}
+
+.nav {
+    position: sticky;
+    top: 0px;
+
+    background-color: #ff9933;
+    color: black;
+
+    height: 80px;
+    width: 100%;
+    max-width: 1240px;
+    text-align: center;
+    z-index: 100;
+}
+
+.nav .navbar span.logo {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    width: 90px;
+    height: 80px;
+
+    background-image: url('./media/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+}
+
+.nav .navbar .links {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.nav .navbar .links .link {
+    position: absolute;
+    top: -22px;
+    height: 80px;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+}
+
+.nav .navbar .links .link:nth-child(1) {
+    left: 200px;
+    background-color: #F8F1E7;
+    padding-right: 0%;
+    margin-right: 50px;
+}
+
+.nav .navbar .links .link:nth-child(3) {
+    right: 200px;
+}
+
+.nav .navbar .links a {
+    text-decoration: none;
+    color: black;
+    padding-right: 50px;
+}
+
+.nav .navbar .links a:nth-child(1) {
+    width: 200px;
+    height: auto;
+
+    padding-right: 0%;
+    margin-right: 15px;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.nav .navbar .links .active-link {
+    color: white;
+}
+
+.nav .navbar button.logout {
+    position: absolute;
+    top: 22px;
+    right: 20px;
+}
+
+.nav .navbar a {
+    display: inline-block;
+    cursor: pointer;
+}
