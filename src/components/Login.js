@@ -69,7 +69,7 @@ const Login = () => {
                     )}
 
                     <span className='logo'></span>
-                    
+
                 </nav>
             </div>
 

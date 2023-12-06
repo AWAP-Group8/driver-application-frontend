@@ -31,7 +31,7 @@ const SelectAndView = () => {
         }
     };
 
-    
+
 
 
     return (
@@ -46,7 +46,7 @@ const SelectAndView = () => {
 
                     <span className='logo'></span>
                     {localStorage.getItem('token') && (
-                    <button className='logout' onClick={handleLogout}>log out</button>
+                        <button className='logout' onClick={handleLogout}>log out</button>
                     )}
                 </nav>
             </div>
@@ -64,12 +64,10 @@ const SelectAndView = () => {
                 {/* Display cabinet numbers based on the selected locker */}
                 {cabinet.length > 0 && (
                     <div className='cabinets'>
-                        <p>Cabinet Numbers:</p>
-                        <ul>
-                            {cabinet.map((cabinetNumber) => (
-                                <li key={cabinetNumber}>{cabinetNumber}</li>
-                            ))}
-                        </ul>
+                        <p>Free cabinets at the selected locker:</p>
+                        {cabinet.map((cabinetNumber) => (
+                            <div key={cabinetNumber}>{cabinetNumber}</div>
+                        ))}
                     </div>
                 )}
 
@@ -80,4 +78,3 @@ const SelectAndView = () => {
 };
 
 export default SelectAndView;
-
