@@ -92,24 +92,29 @@ const DeliverParcels = () => {
                     <button onClick={() => { fetchParcels('D'); handleSelectLocker(); }}>Locker D</button>
                     <button onClick={() => { fetchParcels('E'); handleSelectLocker(); }}>Locker E</button>
                 </div>
-                <div className='parcels'>
-                    {dropingParcels.length > 0 ? (
-                        <div className='parcel-list'>
-                            <p>Parcels in the locker:</p>
-                            {dropingParcels.map((parcel) => (
-                                <div key={parcel.pickup_cabinet} className="parcel-card">
-                                    <p>locker: {parcel.pickup_locker}</p>
-                                    <p>cabinet: {parcel.pickup_cabinet}</p>
-                                    <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
-                                        deliver
-                                    </button>
+               [19:47] Zhenni Pan
+<div className='parcels'>
+                    {selectedLocker && (
+                        <>
+                            {dropingParcels.length > 0 ? (
+                                <div className='parcel-list'>
+                                    <p>Parcels in the locker:</p>
+                                    {dropingParcels.map((parcel) => (
+                                        <div key={parcel.pickup_cabinet} className="parcel-card">
+                                            <p>locker: {parcel.pickup_locker}</p>
+                                            <p>cabinet: {parcel.pickup_cabinet}</p>
+                                            <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
+                                                deliver
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-
-                        <p>No parcels for you to deliver at current locker location</p>
-
+                            ) : (
+ 
+                                <p>No parcels for you to deliver at current locker location</p>
+ 
+                            )}
+                        </>
                     )}
                 </div>
             </div>
