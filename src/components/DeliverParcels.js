@@ -92,7 +92,6 @@ const DeliverParcels = () => {
                     <button onClick={() => { fetchParcels('D'); handleSelectLocker(); }}>Locker D</button>
                     <button onClick={() => { fetchParcels('E'); handleSelectLocker(); }}>Locker E</button>
                 </div>
-               [19:47] Zhenni Pan
 <div className='parcels'>
                     {selectedLocker && (
                         <>
