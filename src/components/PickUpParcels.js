@@ -1,11 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, useNavigate, useState } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './PickUpParcels.css';
 
 const PickUpParcels = () => {
     const navigate = useNavigate();
-    const [error, setError] = React.useState('');
     const [waitingParcels, setWaitingParcels] = React.useState([]);
 
     const handleLogout = () => {
@@ -36,33 +35,32 @@ const PickUpParcels = () => {
     const handlePickUp = async (selectedLocker, selectedCabinet, code) => {
         try {
             // Make a request to the backend 
-            console.log('Before axios request');
-            const response = await axios.post('/pickupParcel', {
-                params: {
-                    selectedLocker,
-                    selectedCabinet,
-                    code,
-                },
+            console.log(selectedLocker, selectedCabinet, code);
+            const response = await axios.post(`/driver/pickupParcel`, {
+                selectedLocker: selectedLocker,
+                    selectedCabinet: selectedCabinet,
+                    code: code,
+            }, {
                 headers: {
                     token: localStorage.getItem('token'),
                 },
+                
             });
-            console.log('After axios request', response);
-
+            const result = response.data;
+            if (result.success) {
+                alert(result.msg);
+                window.location.reload();
+            }else{
+                alert(result.msg);
+            }
+            
+            
             // Check the response from the backend
-            if (response.data.success) {
-                console.log('pickup request successful');
-                console.log('Token:', response.data.data.token);
-            } else {
-                setError(response.data.msg);
-            }
+            
         } catch (error) {
-            if (error.response && error.response.status !== 200) {
-                setError('Invalid credentials');  // Handle non-200 status code
-            } else {
-                console.error('Error during picking up:', error);
-                setError('Internal server error');
-            }
+             
+                alert('Error during picking up:', error);
+            
         }
     };
 

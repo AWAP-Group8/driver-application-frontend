@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import './PickUpParcels.css';
+import './DeliverParcels.css';
 
 const DeliverParcels = () => {
     const navigate = useNavigate();
@@ -25,11 +25,42 @@ const DeliverParcels = () => {
             const dropingParcels = parcels.filter((parcel) => parcel.parcel_status === 'during transportation' && parcel.pickup_locker === locker);
             setDropingParcels(dropingParcels);
 
-            console.log(dropingParcels);
         } catch (error) {
             console.error('Error during locker selection:', error);
         }
     };
+
+//function to handle the click of the button to deliver the parcel
+const handleDelivery = async (selectedLocker, selectedCabinet) => {
+    try {
+        // Make a request to the backend 
+        console.log(selectedLocker, selectedCabinet);
+        const response = await axios.post(`/driver/deliverParcels`, {
+            selectedLocker: selectedLocker,
+                selectedCabinet: selectedCabinet,
+        }, {
+            headers: {
+                token: localStorage.getItem('token'),
+            },
+            
+        });
+        const result = response.data;
+        if (result.success) {
+            alert(result.msg);
+            window.location.reload();
+        }else{
+            alert(result.msg);
+        }        
+        
+        // Check the response from the backend
+        
+    } catch (error) {
+         
+            alert('Error during picking up:', error);
+        
+    }
+};
+
 
     return (
         <div className='container'>
@@ -56,26 +87,31 @@ const DeliverParcels = () => {
                     <button onClick={() => fetchParcels('D')}>Locker D</button>
                     <button onClick={() => fetchParcels('E')}>Locker E</button>
                 </div>
-            </div>
-
-            <div className='parcels'>
+                <div className='parcels'>
                 {dropingParcels.length > 0 ? (
                     <div className='parcel-list'>
                         <p>Parcels in the locker:</p>
                         {dropingParcels.map((parcel) => (
-                            <div key={parcel.pickup_cabinet}
-                                className="parcel-card">
+                            <div key={parcel.pickup_cabinet} className="parcel-card">
                                 <p>locker: {parcel.pickup_locker}</p>
                                 <p>cabinet: {parcel.pickup_cabinet}</p>
+                                <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
+                                    deliver
+                                </button>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p>No parcels for you to deliver at current locker location</p>
+                    
+                        <p>No parcels for you to deliver at current locker location</p>
+                    
                 )}
             </div>
+            </div>
+
+            
         </div>
-    )
+    );
 }
 
 export default DeliverParcels;
