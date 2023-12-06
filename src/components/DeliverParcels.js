@@ -6,6 +6,11 @@ import './DeliverParcels.css';
 const DeliverParcels = () => {
     const navigate = useNavigate();
     const [dropingParcels, setDropingParcels] = React.useState([]);
+    const [selectedLocker, setSelectedLocker] = React.useState(false);
+
+    const handleSelectLocker = () => {
+        setSelectedLocker(true);
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -30,36 +35,36 @@ const DeliverParcels = () => {
         }
     };
 
-//function to handle the click of the button to deliver the parcel
-const handleDelivery = async (selectedLocker, selectedCabinet) => {
-    try {
-        // Make a request to the backend 
-        console.log(selectedLocker, selectedCabinet);
-        const response = await axios.post(`/driver/deliverParcels`, {
-            selectedLocker: selectedLocker,
+    //function to handle the click of the button to deliver the parcel
+    const handleDelivery = async (selectedLocker, selectedCabinet) => {
+        try {
+            // Make a request to the backend 
+            console.log(selectedLocker, selectedCabinet);
+            const response = await axios.post(`/driver/deliverParcels`, {
+                selectedLocker: selectedLocker,
                 selectedCabinet: selectedCabinet,
-        }, {
-            headers: {
-                token: localStorage.getItem('token'),
-            },
-            
-        });
-        const result = response.data;
-        if (result.success) {
-            alert(result.msg);
-            window.location.reload();
-        }else{
-            alert(result.msg);
-        }        
-        
-        // Check the response from the backend
-        
-    } catch (error) {
-         
+            }, {
+                headers: {
+                    token: localStorage.getItem('token'),
+                },
+
+            });
+            const result = response.data;
+            if (result.success) {
+                alert(result.msg);
+                window.location.reload();
+            } else {
+                alert(result.msg);
+            }
+
+            // Check the response from the backend
+
+        } catch (error) {
+
             alert('Error during picking up:', error);
-        
-    }
-};
+
+        }
+    };
 
 
     return (
@@ -81,35 +86,35 @@ const handleDelivery = async (selectedLocker, selectedCabinet) => {
             <div className='content'>
                 <div className='lockers'>
                     <p>Please select a locker:</p>
-                    <button onClick={() => fetchParcels('A')}>Locker A</button>
-                    <button onClick={() => fetchParcels('B')}>Locker B</button>
-                    <button onClick={() => fetchParcels('C')}>Locker C</button>
-                    <button onClick={() => fetchParcels('D')}>Locker D</button>
-                    <button onClick={() => fetchParcels('E')}>Locker E</button>
+                    <button onClick={() => { fetchParcels('A'); handleSelectLocker(); }}>Locker A</button>
+                    <button onClick={() => { fetchParcels('B'); handleSelectLocker(); }}>Locker B</button>
+                    <button onClick={() => { fetchParcels('C'); handleSelectLocker(); }}>Locker C</button>
+                    <button onClick={() => { fetchParcels('D'); handleSelectLocker(); }}>Locker D</button>
+                    <button onClick={() => { fetchParcels('E'); handleSelectLocker(); }}>Locker E</button>
                 </div>
                 <div className='parcels'>
-                {dropingParcels.length > 0 ? (
-                    <div className='parcel-list'>
-                        <p>Parcels in the locker:</p>
-                        {dropingParcels.map((parcel) => (
-                            <div key={parcel.pickup_cabinet} className="parcel-card">
-                                <p>locker: {parcel.pickup_locker}</p>
-                                <p>cabinet: {parcel.pickup_cabinet}</p>
-                                <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
-                                    deliver
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    
+                    {dropingParcels.length > 0 ? (
+                        <div className='parcel-list'>
+                            <p>Parcels in the locker:</p>
+                            {dropingParcels.map((parcel) => (
+                                <div key={parcel.pickup_cabinet} className="parcel-card">
+                                    <p>locker: {parcel.pickup_locker}</p>
+                                    <p>cabinet: {parcel.pickup_cabinet}</p>
+                                    <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
+                                        deliver
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+
                         <p>No parcels for you to deliver at current locker location</p>
-                    
-                )}
-            </div>
+
+                    )}
+                </div>
             </div>
 
-            
+
         </div>
     );
 }

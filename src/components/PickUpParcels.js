@@ -90,34 +90,38 @@ const PickUpParcels = () => {
             <div className='content'>
                 <div className='lockers'>
                     <p>Please select a locker:</p>
-                    <button onClick={() => fetchParcels('A')}>Locker A</button>
-                    <button onClick={() => fetchParcels('B')}>Locker B</button>
-                    <button onClick={() => fetchParcels('C')}>Locker C</button>
-                    <button onClick={() => fetchParcels('D')}>Locker D</button>
-                    <button onClick={() => fetchParcels('E')}>Locker E</button>
+                    <button onClick={() => { fetchParcels('A'); handleSelectLocker(); }}>Locker A</button>
+                    <button onClick={() => { fetchParcels('B'); handleSelectLocker(); }}>Locker B</button>
+                    <button onClick={() => { fetchParcels('C'); handleSelectLocker(); }}>Locker C</button>
+                    <button onClick={() => { fetchParcels('D'); handleSelectLocker(); }}>Locker D</button>
+                    <button onClick={() => { fetchParcels('E'); handleSelectLocker(); }}>Locker E</button>
                 </div>
 
                 <div className='parcels'>
-                    {waitingParcels.length > 0 ? (
-                        <div className='parcel-list'>
-                            <p>Parcels in the locker:</p>
-                            {waitingParcels.map((parcel) => (
-                                <div key={parcel.sender_cabinet}
-                                    className="parcel-card">
-                                    <p>locker: {parcel.sender_locker}</p>
-                                    <p>cabinet: {parcel.sender_cabinet}</p>
-                                    <p>code: {parcel.sender_code}</p>
-                                    <button
-                                        onClick={() => handlePickUp(parcel.sender_locker, parcel.sender_cabinet, parcel.sender_code)}
-                                    >
-                                        pick up
-                                    </button>
+
+                    {selectedLocker && (
+                        <>
+                            {waitingParcels.length > 0 ? (
+                                <div className='parcel-list'>
+                                    <p>Parcels in the locker:</p>
+                                    {waitingParcels.map((parcel) => (
+                                        <div key={parcel.sender_cabinet} className="parcel-card">
+                                            <p>locker: {parcel.sender_locker}</p>
+                                            <p>cabinet: {parcel.sender_cabinet}</p>
+                                            <p>code: {parcel.sender_code}</p>
+                                            <button onClick={() => handlePickUp(parcel.sender_locker, parcel.sender_cabinet, parcel.sender_code)}>
+                                                pick up
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p>No parcels for you to pick up at current locker location</p>
+                            ) : (
+                                <p>No parcels for you to pick up at the current locker location</p>
+                            )}
+                        </>
                     )}
+
+
                 </div>
             </div>
 

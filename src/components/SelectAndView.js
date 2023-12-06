@@ -65,11 +65,9 @@ const SelectAndView = () => {
                 {cabinet.length > 0 && (
                     <div className='cabinets'>
                         <p>Free cabinets at the selected locker:</p>
-                        <ul>
-                            {cabinet.map((cabinetNumber) => (
-                                <li key={cabinetNumber}>{cabinetNumber}</li>
-                            ))}
-                        </ul>
+                        {cabinet.map((cabinetNumber) => (
+                            <div key={cabinetNumber}>{cabinetNumber}</div>
+                        ))}
                     </div>
                 )}
 
