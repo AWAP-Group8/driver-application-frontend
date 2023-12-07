@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 
-axios.defaults.baseURL = `${process.env.BACKEND_API_URL}`;
+axios.defaults.baseURL = `https://gogoship.azurewebsites.net`;
 
 const Login = () => {
     // State variables to hold email, password, and error message
