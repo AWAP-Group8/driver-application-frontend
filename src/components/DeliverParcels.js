@@ -36,35 +36,35 @@ const DeliverParcels = () => {
     };
 
     //function to handle the click of the button to deliver the parcel
-    const handleDelivery = async (selectedLocker, selectedCabinet) => {
+
+    const handleDelivery = async (parcel) => {
         try {
-            // Make a request to the backend 
-            console.log(selectedLocker, selectedCabinet);
             const response = await axios.post(`/driver/deliverParcels`, {
-                selectedLocker: selectedLocker,
-                selectedCabinet: selectedCabinet,
+                selectedLocker: parcel.pickup_locker,
+                selectedCabinet: parcel.pickup_cabinet,
             }, {
                 headers: {
                     token: localStorage.getItem('token'),
                 },
-
             });
+
             const result = response.data;
+
             if (result.success) {
                 alert(result.msg);
-                window.location.reload();
+
+                const updatedParcels = dropingParcels.filter(p => p.pickup_cabinet !== parcel.pickup_cabinet);
+
+                setDropingParcels(updatedParcels);
             } else {
                 alert(result.msg);
             }
 
-            // Check the response from the backend
-
         } catch (error) {
-
             alert('Error during picking up:', error);
-
         }
     };
+
 
 
     return (
@@ -92,7 +92,7 @@ const DeliverParcels = () => {
                     <button onClick={() => { fetchParcels('D'); handleSelectLocker(); }}>Locker D</button>
                     <button onClick={() => { fetchParcels('E'); handleSelectLocker(); }}>Locker E</button>
                 </div>
-<div className='parcels'>
+                <div className='parcels'>
                     {selectedLocker && (
                         <>
                             {dropingParcels.length > 0 ? (
@@ -102,16 +102,17 @@ const DeliverParcels = () => {
                                         <div key={parcel.pickup_cabinet} className="parcel-card">
                                             <p>locker: {parcel.pickup_locker}</p>
                                             <p>cabinet: {parcel.pickup_cabinet}</p>
-                                            <button onClick={() => handleDelivery(parcel.pickup_locker, parcel.pickup_cabinet)}>
+                                            <button onClick={() => handleDelivery(parcel)}>
                                                 deliver
                                             </button>
+
                                         </div>
                                     ))}
                                 </div>
                             ) : (
- 
+
                                 <p>No parcels for you to deliver at current locker location</p>
- 
+
                             )}
                         </>
                     )}

@@ -37,37 +37,39 @@ const PickUpParcels = () => {
     };
 
     //function to handle the click of the button to pick up the parcel
-    const handlePickUp = async (selectedLocker, selectedCabinet, code) => {
-        try {
-            // Make a request to the backend 
-            console.log(selectedLocker, selectedCabinet, code);
-            const response = await axios.post(`/driver/pickupParcel`, {
-                selectedLocker: selectedLocker,
-                selectedCabinet: selectedCabinet,
-                code: code,
-            }, {
-                headers: {
-                    token: localStorage.getItem('token'),
-                },
+const handlePickUp = async (selectedLocker, selectedCabinet, code) => {
+    try {
+       
+        console.log(selectedLocker, selectedCabinet, code);
+        const response = await axios.post(`/driver/pickupParcel`, {
+            selectedLocker: selectedLocker,
+            selectedCabinet: selectedCabinet,
+            code: code,
+        }, {
+            headers: {
+                token: localStorage.getItem('token'),
+            },
+        });
+        
+        const result = response.data;
 
-            });
-            const result = response.data;
-            if (result.success) {
-                alert(result.msg);
-                window.location.reload();
-            } else {
-                alert(result.msg);
-            }
+        if (result.success) {
+            alert(result.msg);
 
+           
+            const updatedParcels = waitingParcels.filter(p => p.sender_cabinet !== selectedCabinet);
 
-            // Check the response from the backend
+            setWaitingParcels(updatedParcels);
 
-        } catch (error) {
-
-            alert('Error during picking up:', error);
-
+        } else {
+            alert(result.msg);
         }
-    };
+
+    } catch (error) {
+        alert('Error during picking up:', error);
+    }
+};
+
 
 
     return (
